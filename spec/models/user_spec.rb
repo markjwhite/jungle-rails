@@ -63,5 +63,47 @@ RSpec.describe User, type: :model do
       }
       expect(User.new(params)).to_not be_valid
     end
+
+    describe '.authenticate_with_credentials' do
+      it 'should return the authenticated user on login' do
+        user =
+          User.create(
+            name: 'Roger',
+            last_name: 'Federer',
+            email: 'roger@federer.com',
+            password: 'asdf',
+            password_confirmation: 'asdf',
+          )
+        authenticated_user =
+          User.authenticate_with_credentials('roger@federer.com', 'asdf')
+        expect(authenticated_user).to eq(user)
+      end
+      it 'should return nul if the login is not authenticated' do
+        user =
+          User.create(
+            name: 'Roger',
+            last_name: 'Federer',
+            email: 'roger@federer.com',
+            password: 'asdf',
+            password_confirmation: 'asdf',
+          )
+        authenticated_user =
+          User.authenticate_with_credentials('roger@federer.com', '123')
+        expect(authenticated_user).to eq(nil)
+      end
+      it 'should authenticate regardless of capitalization and spacing' do
+        user =
+          User.create(
+            name: 'Roger',
+            last_name: 'Federer',
+            email: 'roger@federer.com',
+            password: 'asdf',
+            password_confirmation: 'asdf',
+          )
+        authenticated_user =
+          User.authenticate_with_credentials(' roGer@Federer.com   ', 'asdf')
+        expect(authenticated_user).to eq(user)
+      end
+    end
   end
 end
